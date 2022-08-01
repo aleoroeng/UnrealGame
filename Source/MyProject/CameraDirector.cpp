@@ -15,14 +15,18 @@ ACameraDirector::ACameraDirector()
 void ACameraDirector::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Display, TEXT("HEREEEEEEEEEEE"));
-	int result = SqlUtil::OpenConnection();
-	UE_LOG(LogTemp, Display, TEXT("HEREEEEEEEEEEE, result: %d"), result);
+	ASqlUtil::Character character;
+	character.name = "al";
+	character.damage = 100.0f;
+	character.id = 3;
+	int result = ASqlUtil::OpenConnection();
+	UE_LOG(LogTemp, Display, TEXT("SQL result: %d"), result);
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
 	Request->SetVerb("GET");
 	Request->OnProcessRequestComplete().BindUObject(this, &ACameraDirector::OnResponseReceived);
 	Request->SetURL("http://localhost:5000/unreal/test");
 	Request->ProcessRequest();
+	UE_LOG(LogTemp, Display, TEXT("Insert: %d"), ASqlUtil::AddToDB("a", &character));
 }
 
 // Called every frame
@@ -33,7 +37,7 @@ void ACameraDirector::Tick(float DeltaTime)
 	const float TimeBetweenCameraChanges = 2.0f;
 	const float SmoothBendTime = 10.0f;
 	TimeToNextCameraChange -= DeltaTime;
-
+	
 	if (TimeToNextCameraChange <= 0.0f) {
 		TimeToNextCameraChange += SmoothBendTime;
 
